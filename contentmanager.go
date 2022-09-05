@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/aws/aws-lambda-go/lambdacontext"
 	log "github.com/tommzn/go-log"
 )
 
@@ -19,9 +20,7 @@ func newContentManager(logger log.Logger, publisher ContentPublisher) *ContentMa
 // GetContent will collect contents for passed device and publish it to a device related topic.
 func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest ContentRefreshRequest) {
 
-	mgr.logger.Debugf("Ctx: %#v", ctx)
-
-	logger := mgr.loggerWithContext(refreshRequest)
+	logger := mgr.loggerWithContext(ctx, refreshRequest)
 	defer logger.Flush()
 
 	logger.Debugf("Receive content refresh request for device: %s, topic: %s", refreshRequest.ThingName, refreshRequest.Topic)
@@ -55,12 +54,15 @@ func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest Conten
 }
 
 // loggerWithContext adds values from content refresh request to log content and returns current logger.
-func (mgr *ContentManager) loggerWithContext(refreshRequest ContentRefreshRequest) log.Logger {
+func (mgr *ContentManager) loggerWithContext(ctx context.Context, refreshRequest ContentRefreshRequest) log.Logger {
 
 	contextValues := make(map[string]string)
 	contextValues["topic"] = refreshRequest.Topic
 	contextValues["clientid"] = refreshRequest.ThingName
 	contextValues[log.LogCtxNamespace] = "iot-display-contentmanager"
+	if lambdaCtx, ok := lambdacontext.FromContext(ctx); ok {
+		contextValues[log.LogCtxRequestId] = lambdaCtx.AwsRequestID
+	}
 	return log.AppendContextValues(mgr.logger, contextValues)
 }
 
