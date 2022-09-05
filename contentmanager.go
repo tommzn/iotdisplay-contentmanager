@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aws/aws-lambda-go/lambdacontext"
 	log "github.com/tommzn/go-log"
 )
 
@@ -50,20 +49,16 @@ func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest Conten
 		logger.Error("Message publishing to topic %s failed, reason: %s: ", refreshRequest.Topic, err)
 	}
 
-	logger.Debug("Content siccessful published to topic: ", refreshRequest.Topic)
+	logger.Debug("Content successful published to topic: ", refreshRequest.Topic)
 }
 
 // loggerWithContext adds values from content refresh request to log content and returns current logger.
 func (mgr *ContentManager) loggerWithContext(ctx context.Context, refreshRequest ContentRefreshRequest) log.Logger {
-
 	contextValues := make(map[string]string)
 	contextValues["topic"] = refreshRequest.Topic
 	contextValues["clientid"] = refreshRequest.ThingName
 	contextValues[log.LogCtxNamespace] = "iot-display-contentmanager"
-	if lambdaCtx, ok := lambdacontext.FromContext(ctx); ok {
-		contextValues[log.LogCtxRequestId] = lambdaCtx.AwsRequestID
-	}
-	return log.AppendContextValues(mgr.logger, contextValues)
+	return log.AppendFromLambdaContext(log.AppendContextValues(mgr.logger, contextValues), ctx)
 }
 
 // getTargetTopic will remove last part of a topic, usually "/get", and returns it.
