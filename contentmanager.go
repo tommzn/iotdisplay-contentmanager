@@ -19,6 +19,8 @@ func newContentManager(logger log.Logger, publisher ContentPublisher) *ContentMa
 // GetContent will collect contents for passed device and publish it to a device related topic.
 func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest ContentRefreshRequest) {
 
+	mgr.logger.Debugf("Ctx: %#v", ctx)
+
 	logger := mgr.loggerWithContext(refreshRequest)
 	defer logger.Flush()
 
@@ -46,8 +48,10 @@ func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest Conten
 		},
 	}
 	if err := mgr.publisher.Send(response, targetTopic); err != nil {
-		logger.Debug("Message publishing to topic %s failed, reason: %s: ", refreshRequest.Topic, err)
+		logger.Error("Message publishing to topic %s failed, reason: %s: ", refreshRequest.Topic, err)
 	}
+
+	logger.Debug("Content siccessful published to topic: ", refreshRequest.Topic)
 }
 
 // loggerWithContext adds values from content refresh request to log content and returns current logger.
