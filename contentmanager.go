@@ -2,14 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	log "github.com/tommzn/go-log"
 )
 
 // newContentManager creates a content manager with given logger.
-func newContentManager(logger log.Logger) *ContentManager {
-	return &ContentManager{logger: logger}
+func newContentManager(logger log.Logger, publisher ContentPublisher) *ContentManager {
+	return &ContentManager{
+		logger:    logger,
+		publisher: publisher,
+	}
 }
 
 // GetContent will collect contents for passed device and publish it to a device related topic.
@@ -22,6 +26,28 @@ func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest Conten
 
 	targetTopic := getTargetTopic(refreshRequest.Topic)
 	logger.Debug("Contents will be published to: ", targetTopic)
+
+	response := ContentResponse{
+		Items: []ContentItem{
+			ContentItem{
+				Position: Position{
+					X: 10,
+					Y: 10,
+				},
+				Text: "Hi!",
+			},
+			ContentItem{
+				Position: Position{
+					X: 10,
+					Y: 40,
+				},
+				Text: fmt.Sprintf("I'm %s.", refreshRequest.ThingName),
+			},
+		},
+	}
+	if err := mgr.publisher.Send(response, targetTopic); err != nil {
+		logger.Debug("Message publishing to topic %s failed, reason: %s: ", refreshRequest.Topic, err)
+	}
 }
 
 // loggerWithContext adds values from content refresh request to log content and returns current logger.

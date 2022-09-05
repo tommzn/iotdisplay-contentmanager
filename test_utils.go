@@ -20,3 +20,9 @@ func loadConfigForTest(configFile *string) config.Config {
 func loggerForTest() log.Logger {
 	return log.NewLogger(log.Debug, nil, nil)
 }
+
+func contentManagerForTest() *ContentManager {
+	logger := loggerForTest()
+	publisher := &AwsIotPublisher{logger: logger, iotClient: newIotClientMock()}
+	return newContentManager(logger, publisher)
+}

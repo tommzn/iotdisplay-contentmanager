@@ -4,7 +4,14 @@ import log "github.com/tommzn/go-log"
 
 // ContentManager delivers content for requested devices.
 type ContentManager struct {
-	logger log.Logger
+	logger    log.Logger
+	publisher ContentPublisher
+}
+
+// AwsIotPublisher is used to send content response message to MQTT topics on AWS IOT.
+type AwsIotPublisher struct {
+	logger    log.Logger
+	iotClient AwsIotClient
 }
 
 // ContentRefreshRequest is used to trigger content refresh for passed AWS IOT device.

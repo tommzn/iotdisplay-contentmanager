@@ -16,12 +16,35 @@ func TestContentManagerTestSuite(t *testing.T) {
 
 func (suite *ContentManagerTestSuite) TestGetContent() {
 
-	mgr := newContentManager(loggerForTest())
+	publisherMock := newPublisherMock()
+
+	mgr := contentManagerForTest()
+	mgr.publisher = publisherMock
+
 	request := ContentRefreshRequest{
 		Topic:     "iotdisplay/things/Thing001/contents/get",
 		ThingName: "Thing001",
 	}
 	mgr.GetContent(context.Background(), request)
+
+	suite.Len(publisherMock.contentResponse, 1)
+}
+
+func (suite *ContentManagerTestSuite) TestGetContentWithError() {
+
+	publisherMock := newPublisherMock()
+	publisherMock.shouldReturnError = true
+
+	mgr := contentManagerForTest()
+	mgr.publisher = publisherMock
+
+	request := ContentRefreshRequest{
+		Topic:     "iotdisplay/things/Thing001/contents/get",
+		ThingName: "Thing001",
+	}
+	mgr.GetContent(context.Background(), request)
+
+	suite.Len(publisherMock.contentResponse, 0)
 }
 
 func (suite *ContentManagerTestSuite) TestGetTargetTopic() {

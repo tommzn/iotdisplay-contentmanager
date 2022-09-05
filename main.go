@@ -21,7 +21,9 @@ func bootstrap(conf config.Config) Handler {
 		conf = loadConfig()
 	}
 	secretsManager := newSecretsManager()
-	return newContentManager(newLogger(conf, secretsManager))
+	logger := newLogger(conf, secretsManager)
+	publisher := newAwsIotPublisher(conf, logger)
+	return newContentManager(logger, publisher)
 }
 
 // loadConfig from config file.
