@@ -46,6 +46,7 @@ func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest Conten
 			},
 		},
 	}
+	addContentHash(&response)
 
 	if err := mgr.publisher.Send(response, targetTopic); err != nil {
 		logger.Error("Message publishing to topic %s failed, reason: %s: ", refreshRequest.Topic, err)
