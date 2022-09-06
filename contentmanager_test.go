@@ -59,3 +59,20 @@ func (suite *ContentManagerTestSuite) TestBootstrap() {
 	mgr := bootstrap(loadConfigForTest(nil))
 	suite.NotNil(mgr)
 }
+
+func (suite *ContentManagerTestSuite) TestAddContentHash() {
+
+	response := ContentResponse{
+		Items: []ContentItem{
+			ContentItem{
+				Position: Position{
+					X: 10,
+					Y: 10,
+				},
+				Text: "Test-Item",
+			},
+		},
+	}
+	addContentHash(&response)
+	suite.NotEqual("", response.Hash)
+}

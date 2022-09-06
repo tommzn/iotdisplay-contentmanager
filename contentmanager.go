@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mitchellh/hashstructure/v2"
 	log "github.com/tommzn/go-log"
 )
 
@@ -45,6 +46,7 @@ func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest Conten
 			},
 		},
 	}
+
 	if err := mgr.publisher.Send(response, targetTopic); err != nil {
 		logger.Error("Message publishing to topic %s failed, reason: %s: ", refreshRequest.Topic, err)
 	}
@@ -64,4 +66,11 @@ func (mgr *ContentManager) loggerWithContext(ctx context.Context, refreshRequest
 // getTargetTopic will remove last part of a topic, usually "/get", and returns it.
 func getTargetTopic(topic string) string {
 	return strings.TrimSuffix(topic, "/get")
+}
+
+// addContentHash generates a hash for all items in a content response.
+func addContentHash(response *ContentResponse) {
+	if hash, err := hashstructure.Hash(response.Items, hashstructure.FormatV2, nil); err == nil {
+		response.Hash = fmt.Sprintf("%d", hash)
+	}
 }
