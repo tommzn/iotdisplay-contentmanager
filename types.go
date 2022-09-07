@@ -29,7 +29,7 @@ type ContentResponse struct {
 // ContentItem is a single item, e.g. a text.
 type ContentItem struct {
 	Position Position `json:"position"`
-	Text     string   `json:"text`
+	Text     string   `json:"text"`
 }
 
 // Position defines where to place content items on a screen.
