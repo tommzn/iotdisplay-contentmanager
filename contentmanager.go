@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/mitchellh/hashstructure/v2"
 	log "github.com/tommzn/go-log"
@@ -35,7 +36,7 @@ func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest Conten
 					X: 10,
 					Y: 10,
 				},
-				Text: "Hi!",
+				Text: "Hi there!",
 			},
 			ContentItem{
 				Position: Position{
@@ -43,6 +44,13 @@ func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest Conten
 					Y: 40,
 				},
 				Text: fmt.Sprintf("I'm %s.", refreshRequest.ThingName),
+			},
+			ContentItem{
+				Position: Position{
+					X: 10,
+					Y: 100,
+				},
+				Text: "Last updated: " + time.Now().Format(time.RFC1123),
 			},
 		},
 	}
