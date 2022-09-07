@@ -34,14 +34,14 @@ func (mgr *ContentManager) GetContent(ctx context.Context, refreshRequest Conten
 			ContentItem{
 				Position: Position{
 					X: 10,
-					Y: 10,
+					Y: 50,
 				},
 				Text: "Hi there!",
 			},
 			ContentItem{
 				Position: Position{
 					X: 10,
-					Y: 40,
+					Y: 70,
 				},
 				Text: fmt.Sprintf("I'm %s.", refreshRequest.ThingName),
 			},
